@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Attendance Result</title>
+  <style>
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: white;
+      font-family: "Segoe UI", Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .box {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 25px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .success {
+      background: #22c55e;
+      color: black;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .warning {
+      background: #ef4444;
+      color: white;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      font-size: 16px;
+    }
+
+    th {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .btn {
+      display: inline-block;
+      margin: 15px 10px;
+      padding: 14px 30px;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: bold;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn-green {
+      background: #22c55e;
+      color: black;
+    }
+
+    .btn-blue {
+      background: #38bdf8;
+      color: black;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>📊 Attendance Result</h1>
+
+<div class="box">
+
+  {% if present_students and present_students|length > 0 %}
+    <div class="success">
+      ✅ Attendance Completed Successfully!
+    </div>
+
+    <h2>Present Students</h2>
+
+    <table>
+      <tr>
+        <th>#</th>
+        <th>Roll No / Name</th>
+        <th>Status</th>
+      </tr>
+
+      {% for name in present_students %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ name }}</td>
+        <td>Present</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+  {% else %}
+    <div class="warning">
+      ⚠️ No registered students detected. All faces are UNKNOWN.
+    </div>
+  {% endif %}
+
+  <br>
+
+  {% if excel_path %}
+    <a class="btn btn-green" href="{{ url_for('download_excel', path=excel_path) }}">
+      ⬇ Download Attendance Excel
+    </a>
+  {% endif %}
+
+  <a class="btn btn-blue" href="{{ url_for('teacher_page') }}">
+    ← Back to Teacher Panel
+  </a>
+
+</div>
+
+</body>
+</html>

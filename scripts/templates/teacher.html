@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <title>Teacher Attendance</title>
+  <style>
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: white;
+      font-family: "Segoe UI", Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 15px;
+    }
+
+    .camera-box {
+      max-width: 900px;
+      margin: 0 auto 20px auto;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 3px solid #38bdf8;
+      background: black;
+    }
+
+    video, canvas, img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .controls {
+      max-width: 900px;
+      margin: 20px auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .btn {
+      flex: 1;
+      min-width: 200px;
+      padding: 16px;
+      font-size: 18px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-blue {
+      background: #38bdf8;
+      color: black;
+    }
+
+    .btn-green {
+      background: #22c55e;
+      color: black;
+    }
+
+    .upload-box {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 15px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    input[type=file] {
+      font-size: 16px;
+      color: white;
+    }
+
+    .preview-box {
+      max-width: 900px;
+      margin: 20px auto;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px dashed #5eead4;
+      display: none;
+    }
+
+    .alert-success {
+      background: #22c55e;
+      color: black;
+      padding: 16px;
+      border-radius: 12px;
+      margin: 15px auto;
+      max-width: 900px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .alert-error {
+      background: #ef4444;
+      color: white;
+      padding: 16px;
+      border-radius: 12px;
+      margin: 15px auto;
+      max-width: 900px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<div style="margin-top:40px; color:#94a3b8; font-size:14px;">
+  Created by <b>Harpreet Singh</b> | AI Attendance System
+</div>
+
+<body>
+
+<h1>👨‍🏫 Teacher Attendance</h1>
+
+{% if message %}
+  {% if "✅" in message %}
+    <div class="alert-success">{{ message }}</div>
+  {% else %}
+    <div class="alert-error">{{ message }}</div>
+  {% endif %}
+{% endif %}
+
+<!-- CAMERA VIEW -->
+<div class="camera-box">
+  <video id="video" autoplay playsinline></video>
+  <canvas id="canvas" style="display:none;"></canvas>
+</div>
+
+<div class="controls">
+  <button class="btn btn-blue" onclick="openCamera()">Open Camera</button>
+  <button class="btn btn-blue" onclick="capturePhoto()">Capture Class Photo</button>
+</div>
+
+<!-- PREVIEW -->
+<div class="preview-box" id="previewBox">
+  <img id="previewImg">
+</div>
+
+<!-- UPLOAD + SUBMIT -->
+<div class="upload-box">
+  <form method="POST" action="/upload_attendance" enctype="multipart/form-data">
+    <input type="file" name="photo" id="photoInput" accept="image/*" required onchange="previewFile(event)">
+    <br><br>
+    <button type="submit" class="btn btn-green">
+      Take Attendance
+    </button>
+  </form>
+</div>
+
+<script>
+let stream = null;
+
+function openCamera() {
+  navigator.mediaDevices.getUserMedia({
+    video: {
+      width: { ideal: 1920 },
+      height: { ideal: 1080 },
+      facingMode: "environment"
+    },
+    audio: false
+  }).then(s => {
+    stream = s;
+    document.getElementById("video").srcObject = stream;
+  }).catch(err => {
+    alert("Camera access failed: " + err);
+  });
+}
+
+function capturePhoto() {
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  ctx.drawImage(video, 0, 0);
+
+  canvas.toBlob(blob => {
+    const file = new File([blob], "class_capture.jpg", { type: "image/jpeg" });
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    document.getElementById("photoInput").files = dt.files;
+
+    showPreview(URL.createObjectURL(blob));
+  }, "image/jpeg", 0.95);
+}
+
+function previewFile(event) {
+  const file = event.target.files[0];
+  if (file) {
+    showPreview(URL.createObjectURL(file));
+  }
+}
+
+function showPreview(src) {
+  const box = document.getElementById("previewBox");
+  const img = document.getElementById("previewImg");
+  img.src = src;
+  box.style.display = "block";
+}
+</script>
+
+</body>
+</html>

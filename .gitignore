@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+student_uploads/
+teacher_uploads/
+teacher_frames/
+embeddings/*.pickle
+attendance_*.xlsx
+dataset/
+.jpg
+.png

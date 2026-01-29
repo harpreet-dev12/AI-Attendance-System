@@ -1,0 +1,81 @@
+def recognize_faces(image_path):
+    with open(DB_PATH, "rb") as f:
+        db = pickle.load(f)
+
+    img = cv2.imread(image_path)
+    faces = extract_faces(img)
+
+    present = set()
+    unknown_count = 0
+
+    total_students = len(db)
+
+    for face in faces:
+        emb = get_embedding(face)
+
+        best_name = "Unknown"
+        best_dist = 999
+        second_best_dist = 999
+
+        person_good_matches = {}
+
+        for name, embs in db.items():
+            person_good_matches[name] = 0
+
+            for db_emb in embs:
+                dist = np.linalg.norm(emb - db_emb)
+
+                # Track best and second best
+                if dist < best_dist:
+                    second_best_dist = best_dist
+                    best_dist = dist
+                    best_name = name
+                elif dist < second_best_dist:
+                    second_best_dist = dist
+
+                # Count strong matches only
+                if dist < 1.0:   # STRONG per-embedding match
+                    person_good_matches[name] += 1
+
+        # ---------------- DEBUG ----------------
+        print("================================")
+        print(f"[DEBUG] Best: {best_name}")
+        print(f"[DEBUG] BestDist: {best_dist:.3f}")
+        print(f"[DEBUG] SecondBestDist: {second_best_dist:.3f}")
+        print(f"[DEBUG] Strong match counts: {person_good_matches}")
+        print("================================")
+
+        # --------------- HARD REJECTION RULES ---------------
+
+        # Rule 0: If only 1 student in DB, be EXTRA strict
+        if total_students == 1 and best_dist > 0.85:
+            unknown_count += 1
+            print("[REJECT] Only one student + weak match → UNKNOWN")
+            continue
+
+        # Rule 1: Absolute distance cutoff (VERY STRICT)
+        if best_dist > 1.0:
+            unknown_count += 1
+            print("[REJECT] Distance too high → UNKNOWN")
+            continue
+
+        # Rule 2: Ratio / margin test
+        if (second_best_dist - best_dist) < 0.25:
+            unknown_count += 1
+            print("[REJECT] Ambiguous (ratio test) → UNKNOWN")
+            continue
+
+        # Rule 3: Multi-hit confirmation
+        if person_good_matches.get(best_name, 0) < 4:
+            unknown_count += 1
+            print("[REJECT] Not enough strong confirmations → UNKNOWN")
+            continue
+
+        # ---------------- ACCEPT ----------------
+        present.add(best_name)
+        print(f"[ACCEPT] CONFIDENT MATCH: {best_name}")
+
+    print(f"[SUMMARY] Present: {present}")
+    print(f"[SUMMARY] Unknown faces: {unknown_count}")
+
+    return list(present)

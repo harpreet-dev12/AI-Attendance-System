@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Attendance System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #020617, #0f172a);
+      color: white;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 25px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #cbd5f5;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    .student-btn {
+      background: #22c55e;
+      color: black;
+    }
+
+    .teacher-btn {
+      background: #38bdf8;
+      color: black;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <h1>🤖 AI Attendance</h1>
+
+  <div class="card">
+    <h2>Student</h2>
+    <p>Register face using camera or gallery</p>
+    <a href="/student">
+      <button class="student-btn">Student Registration</button>
+    </a>
+  </div>
+
+  <div class="card">
+    <h2>Teacher</h2>
+    <p>Take class photo & mark attendance</p>
+    <a href="/teacher">
+      <button class="teacher-btn">Teacher Attendance</button>
+    </a>
+  </div>
+
+  <footer>
+    Deep Learning Face Recognition System
+    AI Attendance System | Created by <b>Harpreet Singh
+  </footer>
+</div>
+
+</body>
+</html>
